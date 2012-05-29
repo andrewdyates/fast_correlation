@@ -9,7 +9,6 @@ from py_symmetric_matrix import *
 #%timeit squareform(X, checks=False)
 #1 loops, best of 3: 676 ms per loop
 
-
 # use numpy.ma.MaskedArray for missing values. 1=MASK, 0=TRANSPARENT
 # use numpy.ma.MaskedArray for missing values. 1=MASK, 0=TRANSPARENT
 
@@ -19,7 +18,6 @@ from py_symmetric_matrix import *
 
 # %timeit test(10000)
 # 1 loops, best of 3: 3.2 s per loop
-
 
 class TestMatrix(unittest.TestCase):
 
@@ -47,18 +45,3 @@ class TestMatrix(unittest.TestCase):
 
 if __name__ == "__main__":
   unittest.main()
-
-# # sum of x squared, square of sum y (compress these to save memory)
-# D_xsq_sqy = np.dot(D_sq_sums, (D_sums.T)**2)
-# D_ysq_sqx = np.dot(D_sums**2, D_sq_sums.T)
-# D_midterm = (D_xsq_sqy + D_ysq_sqx) / n
-
-# numerator = D_dot - D_sums_prod_n
-# denominator = D_sq_sums_prod - D_midterm + D_sums_prod_n**2
-
-# pearsonsr = numerator/denominator**0.5
-
-
-
-
-
