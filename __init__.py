@@ -6,7 +6,6 @@ from py_symmetric_matrix import *
 from scipy.spatial.distance import squareform
 
 
-
 def correlate_all(M):
   """Return all-pairs Pearson's correlation as a squareform matrix. 
   Best on numpy.array(dtype=float)
@@ -18,6 +17,7 @@ def correlate_all(M):
 
   RUNTIME on random.rand(500,200)
     21.2 ms (improve of 200x over formula)
+  RUNTIME on random.rand(15000,250)
   """
   m = np.size(M, 0) # number of rows (variables)
   n = np.size(M, 1) # number of columns (power)
@@ -25,6 +25,7 @@ def correlate_all(M):
   sums = np.sum(M,1).reshape(m,1)
   stds = np.std(M,1).reshape(m,1) # divided by n
 
+  # TODO: does making this cummlative matter?
   Dot = squareform(np.dot(M, M.T), checks=False)
   SumProd = squareform(np.dot(sums, sums.T), checks=False)
   StdProd = squareform(np.dot(stds, stds.T), checks=False)
@@ -33,6 +34,52 @@ def correlate_all(M):
   
   # Correlation Matrix
   return CorrMatrix
+
+def cumm_correlate_all(M):
+  """Return all-pairs Pearson's correlation as a squareform matrix. 
+  Best on numpy.array(dtype=float)
+  Is this a performance improvement?
+
+  Args:
+    M: numpy.array row matrix
+  Returns:
+    squareform top triangle matrix of all-pairs correlation, row order index.
+
+  RUNTIME on random.rand(500,200)
+    21.2 ms (improve of 200x over formula)
+  RUNTIME on random.rand(5000,250)
+    3.02 s per loop
+  """
+  m = np.size(M, 0) # number of rows (variables)
+  n = np.size(M, 1) # number of columns (power)
+
+  sums = np.sum(M,1).reshape(m,1)
+  stds = np.std(M,1).reshape(m,1) # divided by n
+
+  # TODO: does making this cummlative matter?
+  C = squareform(np.dot(M, M.T), checks=False)
+  C = C - (squareform(np.dot(sums, sums.T), checks=False)/n)
+  C = C / (squareform(np.dot(stds, stds.T), checks=False)*n)
+  CorrMatrix = C
+  
+  # Correlation Matrix
+  return CorrMatrix
+
+
+def get_ranks(M):
+  """Convert matrix to ranks. (use in Spearman's)
+
+  Args:
+    M: numpy.array row matrix
+  Returns:
+    numpy.array row matrix of corresponding ranks.
+
+  RUNTIME on random.rand(500,200)
+    7.29 ms
+  RUNTIME on random.rand(15000,250)
+    317 ms 
+  """
+  return M.argsort(axis=1).argsort(axis=1)
 
 
 def load_file(filename, n=None, delimiter="\t"):
@@ -80,16 +127,5 @@ def formula_correlate(M):
       dot_product = np.dot(M[i], M[j])
       CorrMatrix[idx] = (dot_product - sums[i]*sums[j]/n) / stds[i]*stds[j]*n
   return CorrMatrix
-
-
-def get_ranks(M):
-  """Convert matrix to ranks. (use in Spearman's)
-
-  Args:
-    M: numpy.array row matrix
-  Returns:
-    numpy.array row matrix of corresponding ranks.
-  """
-  return M.argsort(axis=1).argsort(axis=1)
 
 
