@@ -21,7 +21,6 @@ http://docs.scipy.org/doc/numpy/reference/routines.ma.html
 all pairs spearmanr
 all pairs euclidean
 
-
 USE R!
 http://math.furman.edu/~dcs/courses/math47/R/library/Hmisc/html/rcorr.html
 """
@@ -29,7 +28,6 @@ from __future__ import division
 import os
 import numpy as np
 import numpy.ma as ma # masked array for missing values
-import os
 from scipy.stats import mstats
 
 
@@ -86,8 +84,7 @@ def all_pairs_euclidean(M):
   C = np.zeros((len(M), len(M)))
   for i in xrange(len(M)):
     for j in xrange(i+1, len(M)):
-      q=M[i]-M[j]
-      C[i][j] = ma.sqrt((q*q.T).sum())
+
   return C
 
 
