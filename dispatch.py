@@ -99,9 +99,9 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
   
       # Submit job
       print script_txt
-      #p = subprocess.Popen("qsub", stdin=subprocess.PIPE)
-      #p.communicate(input=script_txt)
-      #p.stdin.close()
+      p = subprocess.Popen("qsub", stdin=subprocess.PIPE)
+      p.communicate(input=script_txt)
+      p.stdin.close()
       
     # increment pairs counter (after submitting for all functions)
     i += k
