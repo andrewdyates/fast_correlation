@@ -6,6 +6,7 @@ EXAMPLE USE:
 python dispatch.py tab_fname=~/Dropbox/biostat/eqtl_data/GSE2034/GSE2034.GPL96.eQTL.normed.tab outdir=~/Desktop/GSE2034_test function=pearson
 """
 from __future__ import division
+import subprocess
 import numpy as np
 from scipy.stats import mstats
 import numpy.ma as ma # masked array for missing values
@@ -30,7 +31,8 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
   tab_fname = os.path.expanduser(tab_fname)
   outdir = os.path.expanduser(outdir)
   assert os.path.exists(tab_fname)
-  assert function in batch.FUNCTIONS
+  if function:
+    assert function in batch.FUNCTIONS
   
   k = int(k)
   assert k > 1
@@ -45,7 +47,7 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
   if function is None:
     ALL_FUNCTIONS = batch.FUNCTIONS
   else:
-    ALL_FUNCTIONS = {'function': batch.FUNCTIONS[function]}
+    ALL_FUNCTIONS = {function: batch.FUNCTIONS[function]}
     
   # for each function, create subdirs
   outdirs = {}
@@ -80,6 +82,9 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
     'batchname': None, # use default batch name
     'm': m,
     }
+  print "Changing current working directory to %s." % os.path.abspath(outdir)
+  os.chdir(outdir)
+  
   while i < num_pairs:
     for function in ALL_FUNCTIONS:
       params.update({
