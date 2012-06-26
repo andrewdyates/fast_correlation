@@ -40,10 +40,16 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
     os.makedirs(outdir)
   except OSError, e:
     if e.errno != errno.EEXIST: raise
+
+  # run for all functions or only a select function
+  if function is None:
+    ALL_FUNCTIONS = batch.FUNCTIONS
+  else:
+    ALL_FUNCTIONS = {'function': batch.FUNCTIONS[function]}
     
   # for each function, create subdirs
   outdirs = {}
-  for function in batch.FUNCTIONS:
+  for function in ALL_FUNCTIONS:
     path = os.path.join(outdir, function)
     try:
       os.makedirs(path)
@@ -57,7 +63,6 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
   print "Loading %s into masked numpy matrix and varlist..." % tab_fname
   M = np.genfromtxt(name_iter(open(tab_fname), varlist), usemask=True, delimiter='\t')
   m = np.size(M, 0) # number of rows (variables)
-  n = np.size(M, 1) # number of columns (power)
   
   # save to file
   print "Saving matrix and varlist..."
@@ -76,7 +81,7 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
     'm': m,
     }
   while i < num_pairs:
-    for function in batch.FUNCTIONS:
+    for function in ALL_FUNCTIONS:
       params.update({
         'function': function, 
         'start': i,
