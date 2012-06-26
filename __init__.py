@@ -1,14 +1,23 @@
 #!/usr/bin/python
-"""Efficiently compute all pairs correlation and save residuals."""
+"""Efficiently compute all pairs correlation and save residuals.
+
+INCOMPLETE PACKAGE
+"""
 from __future__ import division
 import numpy as np
 from py_symmetric_matrix import *
 from scipy.spatial.distance import squareform
 
 
+  
+def spearman(M):
+  raise NotImplemented  
+  
+
 def correlate_all(M):
   """Return all-pairs Pearson's correlation as a squareform matrix. 
   Best on numpy.array(dtype=float)
+  TODO: this can be more efficient
 
   Args:
     M: numpy.array row matrix
@@ -35,35 +44,6 @@ def correlate_all(M):
   # Correlation Matrix
   return CorrMatrix
 
-def cumm_correlate_all(M):
-  """Return all-pairs Pearson's correlation as a squareform matrix. 
-  Best on numpy.array(dtype=float)
-  Is this a performance improvement?
-
-  Args:
-    M: numpy.array row matrix
-  Returns:
-    squareform top triangle matrix of all-pairs correlation, row order index.
-
-  RUNTIME on random.rand(500,200)
-    21.2 ms (improve of 200x over formula)
-  RUNTIME on random.rand(5000,250)
-    3.02 s per loop
-  """
-  m = np.size(M, 0) # number of rows (variables)
-  n = np.size(M, 1) # number of columns (power)
-
-  sums = np.sum(M,1).reshape(m,1)
-  stds = np.std(M,1).reshape(m,1) # divided by n
-
-  # TODO: does making this cummlative matter?
-  C = squareform(np.dot(M, M.T), checks=False)
-  C = C - (squareform(np.dot(sums, sums.T), checks=False)/n)
-  C = C / (squareform(np.dot(stds, stds.T), checks=False)*n)
-  CorrMatrix = C
-  
-  # Correlation Matrix
-  return CorrMatrix
 
 
 def get_ranks(M):
@@ -102,6 +82,7 @@ def biologist_correlate(M):
       idx = sym_idx(i,j,m)
       CorrMatrix[idx] = pearsonr(M[i], M[j])[0]
   return CorrMatrix
+
 
 def formula_correlate(M):
   """Calculate correlations without optimized dot products.
