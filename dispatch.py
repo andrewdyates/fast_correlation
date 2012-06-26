@@ -25,7 +25,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 CMD = "time python %s" % os.path.join(DIR, 'batch.py')
 
 
-def main(tab_fname=None, outdir=None, function=None, k=500000):
+def main(tab_fname=None, outdir=None, function=None, k=100000):
   assert all((tab_fname, outdir, function))
   tab_fname = os.path.expanduser(tab_fname)
   outdir = os.path.expanduser(outdir)
