@@ -26,7 +26,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 CMD = "time python %s" % os.path.join(DIR, 'batch.py')
 
 
-def main(tab_fname=None, outdir=None, function=None, k=100000):
+def main(tab_fname=None, outdir=None, function=None, k=500000):
   assert all((tab_fname, outdir, function))
   tab_fname = os.path.expanduser(tab_fname)
   outdir = os.path.expanduser(outdir)
@@ -97,8 +97,8 @@ def main(tab_fname=None, outdir=None, function=None, k=100000):
         params['end'] = num_pairs
       cmd = CMD + " " + " ".join(["%s=%s" % (key,str(v)) for key,v in params.items()])
       base_job_name = os.path.basename(npy_fname)
-      job_name = "%s_%d_to_%d_of_%d" % \
-        (base_job_name, params['start'], params['end'], num_pairs)
+      job_name = "%s_%s_%d_to_%d_of_%d" % \
+        (base_job_name, function, params['start'], params['end'], num_pairs)
       # Generate qsub job submission script
       script_txt = fill_template(jobname=job_name, script=cmd, **params)
   
