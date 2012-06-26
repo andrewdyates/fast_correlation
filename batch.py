@@ -54,7 +54,7 @@ def main(npy_fname=None, function=None, batchname=None, outdir=None, start=None,
 
   log_msg = LOG_MSG % {'npy_fname': npy_fname, 'function': function, 'start': start,
   'end': end, 'm': m, 'date': datetime.datetime.now().isoformat(' ')}
-  fp_out = open(os.path.join(outdir, batchname), 'w')
+  fp_out = open(os.path.join(outdir, batchname+".txt"), 'w')
   fp_out.write(log_msg + "\n")
   print "Started job...", log_msg
   
