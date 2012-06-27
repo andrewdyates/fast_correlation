@@ -9,9 +9,14 @@ from py_symmetric_matrix import *
 from qsub import *
 from dcor import *
 import os
+import errno
+import pwd
+import shutil
 
 LOG_MSG = "#npy_fname=%(npy_fname)s, function=%(function)s, start=%(start)d, end=%(end)d, m=%(m)d, date=%(date)s"
 REPORT_N = 1000
+# get username
+TMP_DIR = "/tmp/%s" % pwd.getpwuid(os.getuid()).pw_name
 
 def euclidean(x,y):
   q=x-y
@@ -32,6 +37,7 @@ def main(npy_fname=None, function=None, batchname=None, outdir=None, start=None,
   assert npy_fname, function
   assert function in FUNCTIONS
   assert os.path.exists(outdir)
+  assert os.path.isdir(outdir)
 
   m = int(m)
   assert m > 0
@@ -46,6 +52,12 @@ def main(npy_fname=None, function=None, batchname=None, outdir=None, start=None,
     start = int(start)
   assert start < end, start >= 0
 
+  # if tmp directory does not exist, create it
+  try:
+    os.makedirs(TMP_DIR)
+  except OSError, e:
+    if e.errno != errno.EEXIST: raise
+
   M = ma.load(npy_fname)
 
   if batchname is None or batchname in ("None", "NONE", "none"):
@@ -54,7 +66,9 @@ def main(npy_fname=None, function=None, batchname=None, outdir=None, start=None,
 
   log_msg = LOG_MSG % {'npy_fname': npy_fname, 'function': function, 'start': start,
   'end': end, 'm': m, 'date': datetime.datetime.now().isoformat(' ')}
-  fp_out = open(os.path.join(outdir, batchname+".txt"), 'w')
+  # Create output file in temporary directory
+  output_fname = os.path.join(TMP_DIR, batchname+".txt")
+  fp_out = open(output_fname, 'w')
   fp_out.write(log_msg + "\n")
   print "Started job...", log_msg
   
@@ -67,6 +81,9 @@ def main(npy_fname=None, function=None, batchname=None, outdir=None, start=None,
     v = f(M[x], M[y])
     fp_out.write("%.6f\n" % v)
   fp_out.write("#end")
+  fp_out.close() # be sure to close the file to write everything to disk!
+  # Copy temporary file to outdir
+  shutil.move(output_fname, outdir)
 
 if __name__ == "__main__":
   main(**dict([s.split('=') for s in sys.argv[1:]]))
