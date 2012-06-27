@@ -58,21 +58,29 @@ def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False):
     except OSError, e:
       if e.errno != errno.EEXIST: raise
     outdirs[function] = os.path.abspath(path)
-      
-  # import tab
-  varlist = []
-  # M is masked matrix
-  print "Loading %s into masked numpy matrix and varlist..." % tab_fname
-  M = np.genfromtxt(name_iter(open(tab_fname), varlist), usemask=True, delimiter='\t')
-  m = np.size(M, 0) # number of rows (variables)
+
+  # Only re-create varlist and numpy matrix if they do not yet exist.
+  varlist_fname = os.path.join(outdir, os.path.basename(tab_fname) + ".varlist.txt")
+  npy_fname = os.path.join(outdir, "%s.npy" % tab_fname)
+  if os.path.exists(varlist_fname) and os.path.exists(npy_fname):
+    print "Both %s and %s exist, do not recreate varlist and numpy masked matrix files." % \
+        (varlist_fname, npy_fname)
+    # load numpy matrix to get its size
+    m = np.size(ma.load(npy_fname), 0)
+  else:
+    # import tab
+    varlist = []
+    # M is masked matrix
+    print "Loading %s into masked numpy matrix and varlist..." % tab_fname
+    M = np.genfromtxt(name_iter(open(tab_fname), varlist), usemask=True, delimiter='\t')
+    m = np.size(M, 0) # number of rows (variables)
   
-  # save to file
-  print "Saving matrix and varlist..."
-  fp = open(tab_fname + ".varlist.txt", "w")
-  fp.write('\n'.join(varlist))
-  fp.close()
-  npy_fname = "%s.npy" % tab_fname
-  ma.dump(M, npy_fname)
+    # save to file
+    print "Saving matrix and varlist..."
+    fp = open(varlist_fname, "w")
+    fp.write('\n'.join(varlist))
+    fp.close()
+    ma.dump(M, npy_fname)
   
   # dispatch jobs in a loop
   i = 0
@@ -112,7 +120,7 @@ def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False):
     # increment pairs counter (after submitting for all functions)
     i += k
 
-  print "%d jobs submitted at %s." % (math.ceil(m/i), timestamp())
+  print "%d jobs submitted at %s." % (math.ceil(num_pairs/k), timestamp())
   
   
 if __name__ == "__main__":

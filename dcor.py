@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import numpy as np
 """
 FROM:
 http://jpktd.blogspot.com/2012/06/non-linear-dependence-measures-distance.html
