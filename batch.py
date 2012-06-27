@@ -7,6 +7,7 @@ import numpy.ma as ma # masked array for missing values
 import datetime
 from py_symmetric_matrix import *
 from qsub import *
+from dcor import *
 import os
 
 LOG_MSG = "#npy_fname=%(npy_fname)s, function=%(function)s, start=%(start)d, end=%(end)d, m=%(m)d, date=%(date)s"
@@ -16,15 +17,14 @@ def euclidean(x,y):
   q=x-y
   return ma.sqrt((q*q.T).sum())
 
-def dcor(x,y):
-  # TODO
-  pass
 
 # this should be in a separate file
 FUNCTIONS = {
   'pearson': lambda x, y: mstats.pearsonr(x,y)[0],
   'spearman': lambda x, y: mstats.spearmanr(x,y)[0],
   'euclidean': euclidean,
+  'kendalltau': lambda x,y: mstats.kendalltau(x,y)[0],
+  'dcor': dcor,
   }
 
 def main(npy_fname=None, function=None, batchname=None, outdir=None, start=None, end=None, m=None):
