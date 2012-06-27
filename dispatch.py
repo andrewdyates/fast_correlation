@@ -26,7 +26,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 CMD = "time python %s" % os.path.join(DIR, 'batch.py')
 
 
-def main(tab_fname=None, outdir=None, function=None, k=500000):
+def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False):
   assert all((tab_fname, outdir, function))
   tab_fname = os.path.expanduser(tab_fname)
   outdir = os.path.expanduser(outdir)
@@ -104,9 +104,10 @@ def main(tab_fname=None, outdir=None, function=None, k=500000):
   
       # Submit job
       print script_txt
-      p = subprocess.Popen("qsub", stdin=subprocess.PIPE)
-      p.communicate(input=script_txt)
-      p.stdin.close()
+      if not dry:
+        p = subprocess.Popen("qsub", stdin=subprocess.PIPE)
+        p.communicate(input=script_txt)
+        p.stdin.close()
       
     # increment pairs counter (after submitting for all functions)
     i += k
