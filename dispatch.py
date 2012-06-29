@@ -4,6 +4,9 @@
 EXAMPLE USE:
 
 python dispatch.py tab_fname=~/Dropbox/biostat/eqtl_data/GSE2034/GSE2034.GPL96.eQTL.normed.tab outdir=~/Desktop/GSE2034_test function=pearson
+
+Skip first several jobs, dryrun
+time python $HOME/fast_correlation/dispatch.py tab_fname=/nfs/01/osu6683/gse2034/GSE2034.GPL96.eQTL.normed.tab outdir=/nfs/01/osu6683/gse2034/gse2034_pairscores k=50000 function=dcor job_offset=1100 dry=True
 """
 from __future__ import division
 import subprocess
@@ -26,7 +29,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 CMD = "time python %s" % os.path.join(DIR, 'batch.py')
 
 
-def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False):
+def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False, job_offset=None):
   assert all((tab_fname, outdir, function))
   tab_fname = os.path.expanduser(tab_fname)
   outdir = os.path.expanduser(outdir)
@@ -36,6 +39,9 @@ def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False):
   
   k = int(k)
   assert k > 1
+  if job_offset is not None:
+    job_offset = int(job_offset)
+    assert job_offset >= 0
   
   # create outdir
   try:
@@ -92,8 +98,20 @@ def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False):
     }
   print "Changing current working directory to %s." % os.path.abspath(outdir)
   os.chdir(outdir)
-  
+
+  n_jobs = 0
+  n_skipped = 0
   while i < num_pairs:
+    
+    if job_offset is not None:
+      if n_jobs < job_offset:
+        print "Skipping job %d... %d offset, %d skipped" % \
+            (n_jobs, job_offset, n_skipped)
+        n_skipped += 1
+        n_jobs += 1
+        i += k
+        continue
+
     for function in ALL_FUNCTIONS:
       params.update({
         'function': function, 
@@ -119,8 +137,10 @@ def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False):
       
     # increment pairs counter (after submitting for all functions)
     i += k
+    n_jobs += 1
 
-  print "%d jobs submitted at %s." % (math.ceil(num_pairs/k), timestamp())
+  print "%d jobs (%d skipped) submitted at %s." % (n_jobs, n_skipped, timestamp())
+  print "expected %d jobs." % math.ceil(num_pairs/k)
   
   
 if __name__ == "__main__":
