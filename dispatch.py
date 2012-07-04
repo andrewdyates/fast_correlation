@@ -90,7 +90,7 @@ def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False, job_of
   
   # dispatch jobs in a loop
   i = 0
-  num_pairs = int(m * (m-1) / 2)
+  num_pairs = int(m * (m-1) / 2) # no diagonal: n choose 2
   params = {
     'npy_fname': os.path.abspath(npy_fname),
     'batchname': None, # use default batch name
