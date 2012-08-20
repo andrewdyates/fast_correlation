@@ -1,3 +1,5 @@
+=OBSOLETE as of August 2012=
+
 fast_correlation
 ================
 

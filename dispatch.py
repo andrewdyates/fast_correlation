@@ -30,7 +30,7 @@ CMD = "time python %s" % os.path.join(DIR, 'batch.py')
 
 
 def main(tab_fname=None, outdir=None, function=None, k=500000, dry=False, job_offset=None):
-  assert all((tab_fname, outdir, function))
+  assert all((tab_fname, outdir))
   tab_fname = os.path.expanduser(tab_fname)
   outdir = os.path.expanduser(outdir)
   assert os.path.exists(tab_fname)
