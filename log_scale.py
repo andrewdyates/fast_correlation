@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""Save a copy of a .tab matrix as log scaled.
+
+EXAMPLE USE:
+  python log_scale.py mytab.tab
+"""
 import numpy as np
 import numpy.ma as ma
 from util import *
@@ -18,7 +23,7 @@ def main(tab_fname=None):
   # save matrix back to .tab format
   fp = open(tab_fname + ".logscale.tab", "w")
   for i, row in enumerate(Q):
-    fp.write(varlist[i])
+    fp.write(varlist[i] + '\t')
     fp.write('\t'.join(map(tostr, row)))
     fp.write('\n')
   fp.close()
